@@ -2,38 +2,106 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 @TeleOp
 public class teleoptank extends LinearOpMode{
+
+    public static int  MAX_VALUE_LIFT,MIN_VALUE_LIFT;
+    public static int SERVO_POS_INIT, SERVO_POS_DROP;
+    double rightPower,leftPower;
+
+    boolean  BUTTON_B_IS_PRESSED=false;
+
+
     @Override
     public void runOpMode() {
+        GamepadEx g1 =new GamepadEx(gamepad1);
         DcMotor motorfl = hardwareMap.dcMotor.get("motorfl");
         DcMotor motorfr = hardwareMap.dcMotor.get("motorfr");
         DcMotor motorbl = hardwareMap.dcMotor.get("motorbl");
         DcMotor motorbr = hardwareMap.dcMotor.get("motorbr");
+        DcMotor axHydro = hardwareMap.dcMotor.get("axHydro");
+
+
+        DcMotor liftRight = hardwareMap.dcMotor.get("lift1");
+        DcMotor liftLeft= hardwareMap.dcMotor.get("lift1");
+
+        Servo boxRight = hardwareMap.servo.get("boxRight");
+        Servo boxLeft = hardwareMap.servo.get("boxLeft");
+
+
+
+        double drive;
+        double turn;
+
 
         motorfr.setDirection(DcMotorSimple.Direction.REVERSE);
         motorbr.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        liftLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        boxRight.setDirection(Servo.Direction.REVERSE);
+
+        liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        liftRight.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
+        liftLeft.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
+
 
         waitForStart();
 
         while(!isStopRequested() && opModeIsActive())
         {
-            double y = -gamepad1.left_stick_y;
-            double x = gamepad1.right_stick_x * 1.1;
-            double rx = gamepad1.right_stick_x;
+            drive = gamepad1.right_stick_y*-1;
+            turn = gamepad1.right_trigger-gamepad1.left_trigger;
 
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            rightPower= Range.clip(drive+turn, -1,1);
+            leftPower=drive-turn;
 
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
-            motorfl.setPower(frontLeftPower);
-            motorfr.setPower(backLeftPower);
-            motorbl.setPower(frontRightPower);
-            motorbr.setPower(backRightPower);
+            motorfl.setPower(leftPower);
+            motorfr.setPower(rightPower);
+            motorbl.setPower(leftPower);
+            motorbr.setPower(rightPower);
+
+            if(gamepad1.a) axHydro.setPower(1);
+
+            if(gamepad1.dpad_up && liftRight.getCurrentPosition()<MAX_VALUE_LIFT)
+            {
+                liftRight.setPower(1);
+                liftLeft.setPower(1);
+            }
+            if(gamepad1.dpad_down && liftRight.getCurrentPosition()<MIN_VALUE_LIFT)
+            {
+                liftRight.setPower(-1);
+                liftLeft.setPower(-1);
+            }
+            if(g1.getButtonDown("b"))
+            {
+                if( !BUTTON_B_IS_PRESSED);
+                {
+                    boxRight.setPosition(SERVO_POS_DROP);
+                    boxLeft.setPosition(SERVO_POS_DROP);
+                    BUTTON_B_IS_PRESSED=true;
+                }
+                if(BUTTON_B_IS_PRESSED)
+                {
+                    boxRight.setPosition(SERVO_POS_INIT);
+                    boxLeft.setPosition(SERVO_POS_INIT);
+                    BUTTON_B_IS_PRESSED=false;
+                }
+            }
+            
+
+
+
+
+
         }
     }
 }
