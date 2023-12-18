@@ -25,15 +25,21 @@ public class teleoptank extends LinearOpMode{
         DcMotor motorfr = hardwareMap.dcMotor.get("motorfr");
         DcMotor motorbl = hardwareMap.dcMotor.get("motorbl");
         DcMotor motorbr = hardwareMap.dcMotor.get("motorbr");
+
+        DcMotor liftLeft= hardwareMap.dcMotor.get("liftLeft");
+        /*
+
+
         DcMotor axHydro = hardwareMap.dcMotor.get("axHydro");
 
 
         DcMotor liftRight = hardwareMap.dcMotor.get("lift1");
-        DcMotor liftLeft= hardwareMap.dcMotor.get("lift1");
+
 
         Servo boxRight = hardwareMap.servo.get("boxRight");
         Servo boxLeft = hardwareMap.servo.get("boxLeft");
 
+         */
 
 
         double drive;
@@ -43,17 +49,25 @@ public class teleoptank extends LinearOpMode{
         motorfr.setDirection(DcMotorSimple.Direction.REVERSE);
         motorbr.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        liftLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftLeft.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
+
+        /*
+
+
+
+
+        liftRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         boxRight.setDirection(Servo.Direction.REVERSE);
 
         liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         liftRight.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
-        liftLeft.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
 
 
+         */
         waitForStart();
 
         while(!isStopRequested() && opModeIsActive())
@@ -68,19 +82,10 @@ public class teleoptank extends LinearOpMode{
             motorfr.setPower(rightPower);
             motorbl.setPower(leftPower);
             motorbr.setPower(rightPower);
-
+        /*
             if(gamepad1.a) axHydro.setPower(1);
 
-            if(gamepad1.dpad_up && liftRight.getCurrentPosition()<MAX_VALUE_LIFT)
-            {
-                liftRight.setPower(1);
-                liftLeft.setPower(1);
-            }
-            if(gamepad1.dpad_down && liftRight.getCurrentPosition()<MIN_VALUE_LIFT)
-            {
-                liftRight.setPower(-1);
-                liftLeft.setPower(-1);
-            }
+
             if(g1.getButtonDown("b"))
             {
                 if( !BUTTON_B_IS_PRESSED);
@@ -96,7 +101,22 @@ public class teleoptank extends LinearOpMode{
                     BUTTON_B_IS_PRESSED=false;
                 }
             }
-            
+
+
+
+
+
+
+        */
+
+            if(gamepad1.dpad_up && liftLeft.getCurrentPosition()<MAX_VALUE_LIFT)
+            {
+                liftLeft.setPower(1);
+            }
+            if(gamepad1.dpad_down && liftLeft.getCurrentPosition()<MIN_VALUE_LIFT)
+            {
+                liftLeft.setPower(-1);
+            }
 
 
 
